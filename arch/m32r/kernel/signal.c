@@ -55,6 +55,7 @@ restore_sigcontext(struct pt_regs *regs, struct sigcontext __user *sc,
 		   int *r0_p)
 {
 	unsigned int err = 0;
+	unsigned long psw;
 
 	/* Always make any pending restarted system calls return -EINTR */
 	current_thread_info()->restart_block.fn = do_no_restart_syscall;
@@ -78,15 +79,15 @@ restore_sigcontext(struct pt_regs *regs, struct sigcontext __user *sc,
 	COPY(acc0l);
 	COPY(acc1h);		/* ISA_DSP_LEVEL2 only */
 	COPY(acc1l);		/* ISA_DSP_LEVEL2 only */
-	COPY(psw);
 	COPY(bpc);
 	COPY(bbpsw);
 	COPY(bbpc);
 	COPY(spu);
 	COPY(fp);
 	COPY(lr);
-	COPY(spi);
 #undef COPY
+	err |= __get_user(psw, &sc->sc_psw);
+	regs->psw = (regs->psw & ~M32R_PSW_BC) | (psw & M32R_PSW_BC);
 
 	regs->syscall_nr = -1;	/* disable syscall checks */
 	err |= __get_user(*r0_p, &sc->sc_r0);

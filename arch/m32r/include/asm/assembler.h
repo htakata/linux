@@ -177,8 +177,7 @@
 	mvtc	r14, cr3	; spu
 	pop	r13
 	pop	lr		; r14
-	pop	sp		; spi (r15)
-	addi	sp, #4		; Skip orig_r0
+	addi	sp, #8		; Skip spi, orig_r0
 	.fillinsn
 1:	rte
 	.section .fixup,"ax"

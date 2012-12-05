@@ -204,6 +204,8 @@ static int ptrace_setregs(struct task_struct *tsk, void __user *uregs)
 	ret = -EFAULT;
 	if (copy_from_user(&newregs, uregs, sizeof(struct pt_regs)) == 0) {
 		struct pt_regs *regs = task_pt_regs(tsk);
+		newregs.psw &= M32R_PSW_BC;
+		newregs.psw |= regs->psw & ~M32R_PSW_BC;
 		*regs = newregs;
 		ret = 0;
 	}
